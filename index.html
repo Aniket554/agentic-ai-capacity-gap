@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Capacity Gap — An Interactive Companion to Trustworthy Agentic AI in the Global South</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEEBE2;
+    --surface:#FFFFFF;
+    --surface-2:#E4DFD1;
+    --text:#1B2420;
+    --text-muted:#5B6560;
+    --accent:#B9762C;
+    --accent-soft:#E9D2AC;
+    --danger:#A8402F;
+    --danger-soft:#EBD2CB;
+    --safe:#3F7D5C;
+    --safe-soft:#D6E6DC;
+    --border:#D3CDBC;
+    --shadow: 0 1px 2px rgba(27,36,32,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#10181A;
+      --surface:#16232699;
+      --surface:#182527;
+      --surface-2:#1F3236;
+      --text:#EDE7D8;
+      --text-muted:#9AAAA6;
+      --accent:#E0A94E;
+      --accent-soft:#3B301C;
+      --danger:#D9695A;
+      --danger-soft:#3A2321;
+      --safe:#6FBE95;
+      --safe-soft:#1E2E27;
+      --border:#2A3D40;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10181A;
+    --surface:#182527;
+    --surface-2:#1F3236;
+    --text:#EDE7D8;
+    --text-muted:#9AAAA6;
+    --accent:#E0A94E;
+    --accent-soft:#3B301C;
+    --danger:#D9695A;
+    --danger-soft:#3A2321;
+    --safe:#6FBE95;
+    --safe-soft:#1E2E27;
+    --border:#2A3D40;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); }
+
+  h1,h2,h3{ font-family:"Newsreader", Georgia, serif; font-weight:600; margin:0; }
+  a{ color:var(--accent); }
+  .mono{ font-family:"IBM Plex Mono", monospace; }
+
+  .wrap{ max-width: 980px; margin:0 auto; padding: 0 24px; }
+
+  /* ---------- Header ---------- */
+  header.top{
+    border-bottom:1px solid var(--border);
+    padding: 18px 0;
+  }
+  .top-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand .mark{ font-size:1.1rem; }
+  .brand .name{ font-family:"Newsreader", serif; font-size:1.05rem; font-weight:600; }
+  .theme-toggle{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-muted);
+    border-radius:6px;
+    padding:6px 10px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.75rem;
+    cursor:pointer;
+  }
+  .theme-toggle:hover{ color:var(--text); }
+
+  /* ---------- Hero ---------- */
+  .hero{ padding: 56px 0 40px; }
+  .hero .eyebrow-line{ color:var(--text-muted); font-size:0.9rem; margin-bottom:14px; max-width:60ch; }
+  .hero h1{ font-size: clamp(2rem, 4.4vw, 3rem); line-height:1.12; max-width: 16ch; }
+  .hero p.lede{ margin-top:18px; max-width:62ch; color:var(--text-muted); font-size:1.05rem; }
+  .hero .cite{ margin-top: 22px; font-size:0.85rem; color:var(--text-muted); }
+  .hero .cite em{ font-style:italic; }
+
+  section{ padding: 44px 0; border-top:1px solid var(--border); }
+  section > .head{ margin-bottom: 26px; max-width: 68ch; }
+  section > .head h2{ font-size:1.5rem; margin-bottom:8px; }
+  section > .head p{ color:var(--text-muted); font-size:0.98rem; }
+
+  /* ---------- Pipeline ---------- */
+  .pipeline{
+    display:flex;
+    gap:0;
+    margin: 8px 0 24px;
+    overflow-x:auto;
+    padding-bottom: 6px;
+  }
+  .stage-btn{
+    flex:1 1 0;
+    min-width:130px;
+    background:none;
+    border:none;
+    border-bottom:3px solid var(--border);
+    color:var(--text-muted);
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.82rem;
+    text-align:left;
+    padding:14px 10px 12px 0;
+    cursor:pointer;
+    position:relative;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .stage-btn .num{ display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; }
+  .stage-btn .label{ font-family:"Newsreader", serif; font-size:1.05rem; font-weight:500; color:var(--text); display:block; }
+  .stage-btn:not(:last-child){ margin-right:14px; }
+  .stage-btn:hover{ border-color: var(--accent); }
+  .stage-btn.active{ border-color: var(--accent); }
+  .stage-btn.active .num{ color:var(--accent); }
+  .stage-btn .weight{
+    display:inline-block; margin-top:8px; height:4px; border-radius:2px;
+    background:var(--accent-soft); position:relative; overflow:hidden; width:100%;
+  }
+  .stage-btn .weight i{ position:absolute; left:0; top:0; bottom:0; background:var(--accent); border-radius:2px; }
+
+  .stage-panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding: 26px 28px;
+    box-shadow:var(--shadow);
+  }
+  .stage-panel .tag{
+    display:inline-block;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.72rem;
+    color:var(--danger);
+    background:var(--danger-soft);
+    padding:3px 8px;
+    border-radius:4px;
+    margin-bottom:12px;
+  }
+  .stage-panel h3{ font-size:1.3rem; margin-bottom:10px; }
+  .stage-panel p{ color:var(--text); font-size:0.97rem; margin:0 0 14px; max-width:66ch; }
+  .stage-panel .risk-line{ color:var(--text-muted); font-size:0.92rem; margin-bottom:18px; max-width:66ch; }
+  .stage-panel .mit-heading{ font-family:"IBM Plex Mono", monospace; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; }
+  .mit-chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .mit-chip{
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    border-radius:20px;
+    padding:6px 13px;
+    font-size:0.84rem;
+    color:var(--text);
+  }
+
+  /* ---------- Radar ---------- */
+  .radar-wrap{ display:flex; gap:36px; flex-wrap:wrap; align-items:flex-start; }
+  .radar-svg-box{ flex:0 0 auto; }
+  .radar-side{ flex:1 1 260px; min-width:240px; }
+  .profile-switch{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .profile-btn{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    padding:8px 14px;
+    border-radius:8px;
+    font-size:0.86rem;
+    cursor:pointer;
+  }
+  .profile-btn.active{ border-color:var(--accent); background:var(--accent-soft); color:var(--text); }
+  .radar-legend{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+  .radar-legend .row{ display:flex; justify-content:space-between; font-size:0.88rem; border-bottom:1px dashed var(--border); padding-bottom:8px; }
+  .radar-legend .row span.dim{ color:var(--text); }
+  .radar-legend .row span.val{ font-family:"IBM Plex Mono", monospace; color:var(--text-muted); }
+  .radar-note{ margin-top:16px; font-size:0.82rem; color:var(--text-muted); max-width:44ch; }
+
+  /* ---------- Mitigation library ---------- */
+  .filter-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  .filter-chip{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-muted);
+    padding:6px 13px;
+    border-radius:20px;
+    font-size:0.82rem;
+    cursor:pointer;
+    font-family:"IBM Plex Mono", monospace;
+  }
+  .filter-chip.active{ border-color:var(--accent); color:var(--text); background:var(--accent-soft); }
+  .tech-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
+  .tech-card{
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:10px;
+    padding:18px 20px;
+    box-shadow:var(--shadow);
+  }
+  .tech-card .stage-tag{ font-family:"IBM Plex Mono", monospace; font-size:0.72rem; color:var(--accent); margin-bottom:8px; }
+  .tech-card h4{ font-family:"Newsreader", serif; font-weight:600; font-size:1.08rem; margin:0 0 8px; }
+  .tech-card p{ font-size:0.88rem; color:var(--text-muted); margin:0 0 12px; }
+  .tech-card .cost{ display:flex; gap:6px; align-items:center; font-size:0.78rem; color:var(--text-muted); }
+  .cost-dot{ width:7px; height:7px; border-radius:50%; background:var(--border); }
+  .cost-dot.on{ background:var(--safe); }
+
+  /* ---------- Checklist ---------- */
+  .checklist{ display:flex; flex-direction:column; gap:0; border-top:1px solid var(--border); }
+  .check-item{
+    display:flex; gap:16px; align-items:flex-start;
+    padding:18px 0; border-bottom:1px solid var(--border);
+  }
+  .check-item input[type=checkbox]{
+    appearance:none; -webkit-appearance:none;
+    width:20px; height:20px; border-radius:5px; border:1.5px solid var(--border);
+    flex:0 0 auto; margin-top:2px; cursor:pointer; position:relative; background:var(--surface);
+  }
+  .check-item input[type=checkbox]:checked{ background:var(--safe); border-color:var(--safe); }
+  .check-item input[type=checkbox]:checked::after{
+    content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--surface); font-size:13px; font-weight:700;
+  }
+  .check-item .body h4{ font-family:"Newsreader", serif; font-size:1.08rem; font-weight:600; margin:0 0 4px; }
+  .check-item .body p{ font-size:0.9rem; color:var(--text-muted); margin:0; max-width:60ch; }
+  .check-item.done .body h4{ color:var(--text-muted); text-decoration: line-through; text-decoration-color: var(--border); }
+  .progress-wrap{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+  .progress-bar{ flex:1; height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
+  .progress-bar i{ display:block; height:100%; background:var(--safe); width:0%; transition:width 0.3s ease; }
+  .progress-label{ font-family:"IBM Plex Mono", monospace; font-size:0.8rem; color:var(--text-muted); white-space:nowrap; }
+
+  footer{ padding: 40px 0 60px; border-top:1px solid var(--border); }
+  footer .cite-block{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:20px 22px; font-size:0.86rem; color:var(--text-muted); margin-bottom:14px;
+  }
+  footer .cite-block strong{ color:var(--text); }
+  footer .fine{ font-size:0.8rem; color:var(--text-muted); }
+
+  @media (max-width: 640px){
+    .hero{ padding: 40px 0 28px; }
+    .stage-panel{ padding:20px; }
+    .radar-wrap{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand">
+      <span class="mark">🧭</span>
+      <span class="name">The Capacity Gap</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">dark mode</button>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <div class="eyebrow-line">Interactive companion · <em>Trustworthy Agentic AI in the Global South</em></div>
+  <h1>Same failure modes. Thinner safety net.</h1>
+  <p class="lede">Qi et al. (2026) mapped how agentic AI fails across five stages — perceive, plan, act, reflect, learn. This tool walks that same map from a resource-constrained vantage point: what breaks, why it breaks worse here, and what a two-person security team can actually do about it.</p>
+  <div class="cite">Companion resource for the review article <em>Trustworthy Agentic AI in the Global South</em> (2026). Figures here are illustrative reconstructions of the article's conceptual framing, not published indices.</div>
+</div>
+
+<section id="lifecycle">
+  <div class="wrap">
+    <div class="head">
+      <h2>Walk the agent lifecycle</h2>
+      <p>Select a stage to see where trust breaks down and what a lean team can do first. Bar length shows how much attention that stage draws in the risk literature — Act dominates, because it's where a mistake becomes irreversible.</p>
+    </div>
+
+    <div class="pipeline" id="pipeline"></div>
+    <div class="stage-panel" id="stagePanel"></div>
+  </div>
+</section>
+
+<section id="capacity">
+  <div class="wrap">
+    <div class="head">
+      <h2>The capacity gap behind the technology</h2>
+      <p>The same agent framework ships to a fintech start-up in Nairobi and a bank in Frankfurt. What doesn't travel with it is everything around the technology. Compare two illustrative deployment profiles across five dimensions.</p>
+    </div>
+    <div class="radar-wrap">
+      <div class="radar-svg-box">
+        <svg id="radarSvg" viewBox="0 0 360 360" width="360" height="360"></svg>
+      </div>
+      <div class="radar-side">
+        <div class="profile-switch">
+          <button class="profile-btn active" data-profile="both">Both profiles</button>
+          <button class="profile-btn" data-profile="wellresourced">Well-resourced only</button>
+          <button class="profile-btn" data-profile="constrained">Resource-constrained only</button>
+        </div>
+        <div class="radar-legend" id="radarLegend"></div>
+        <p class="radar-note">None of these numbers come from a single published index — they're a deliberately simplified illustration of a real, well-documented pattern, in the same spirit as the ITU Global Cybersecurity Index's regional tiers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mitigations">
+  <div class="wrap">
+    <div class="head">
+      <h2>Mitigation library</h2>
+      <p>Real techniques drawn from the review, tagged by lifecycle stage and rough implementation cost. Filter by stage to match the mitigation set above.</p>
+    </div>
+    <div class="filter-row" id="filterRow"></div>
+    <div class="tech-grid" id="techGrid"></div>
+  </div>
+</section>
+
+<section id="recommendations">
+  <div class="wrap">
+    <div class="head">
+      <h2>What would actually help</h2>
+      <p>Five low-cost, high-leverage steps from the review's closing section. Check off what your organization already has in place.</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><i id="progressFill"></i></div>
+      <div class="progress-label" id="progressLabel">0 / 5</div>
+    </div>
+    <div class="checklist" id="checklist"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cite-block">
+      <strong>Citing this companion.</strong> This dashboard accompanies <em>Trustworthy Agentic AI in the Global South: A Developing-Country Reading of Qi et al. (2026), "Towards Trustworthy Agentic AI"</em> (Review Article, September 2026), which itself reviews Qi, J., Li, M., Liu, J., Shu, Y., Yu, D., Ma, S., Cui, W., Zhao, Y., Chen, Y., Jiang, R., King, I., &amp; Xu, Z. (2026). Towards Trustworthy Agentic AI: A Comprehensive Survey of Safety, Robustness, Privacy, and System Security. <em>Academia AI and Applications</em>, 2. arXiv:2605.23989.
+    </div>
+    <div class="fine">All lifecycle, capacity-gap, and mitigation framings above are the review authors' interpretive synthesis of the surveyed literature, not new empirical measurements.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- Theme toggle ----------
+  var root = document.documentElement;
+  var toggle = document.getElementById('themeToggle');
+  function applyThemeLabel(){
+    var explicit = root.getAttribute('data-theme');
+    var isDark = explicit ? explicit === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    toggle.textContent = isDark ? 'light mode' : 'dark mode';
+  }
+  try{
+    var saved = localStorage.getItem('cg-theme');
+    if(saved){ root.setAttribute('data-theme', saved); }
+  }catch(e){}
+  applyThemeLabel();
+  toggle.addEventListener('click', function(){
+    var current = root.getAttribute('data-theme');
+    var isDarkNow = current ? current === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next = isDarkNow ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try{ localStorage.setItem('cg-theme', next); }catch(e){}
+    applyThemeLabel();
+    drawRadar(); // recolor svg strokes on theme change
+  });
+
+  // ---------- Data ----------
+  var stages = [
+    {
+      id:'perceive', num:'01', label:'Perceive', weight:16,
+      risk:'Prompt injection & untrusted input',
+      body:'The agent reads whatever is put in front of it — an email, a web page, a document — and treats instructions buried inside as if a user had typed them. This is one leg of the "lethal trifecta": an agent that reads untrusted content, holds private data, and can act externally, all at once.',
+      riskLine:'In a lean deployment, no one is watching what the agent actually reads before it acts on it.',
+      mitigations:['Sandboxed parsers','Treat retrieved content as data, not instructions','Input provenance tagging']
+    },
+    {
+      id:'plan', num:'02', label:'Plan', weight:14,
+      risk:'Unsafe planning',
+      body:'The agent chooses a course of action toward a goal, sometimes chaining steps a human never explicitly authorized. Constrained planning and runtime shielding both help, but both cost engineering time a two-person team rarely has.',
+      riskLine:'Well-funded labs can afford to try several planning constraints and measure results. A lean team gets one shot.',
+      mitigations:['Constrained planning','Runtime shielding','Goal scope limits']
+    },
+    {
+      id:'act', num:'03', label:'Act', weight:38,
+      risk:'Tool misuse & data exfiltration — highest attention in the literature',
+      body:'The moment the agent actually does something: sends an email, moves money, deletes a record, calls an API. This is where mistakes become irreversible, and where sandboxing, ephemeral credentials, and least-privilege access all cost the engineering time a lean team may not have.',
+      riskLine:'The review\'s headline example — a prompt-injection flaw in a major office suite — assumed a vendor that patches in days and a customer that can verify the fix. Many developing-country deployments have neither.',
+      mitigations:['Least-privilege API scopes','Human approval for irreversible actions','Short-lived credentials','Sandboxing']
+    },
+    {
+      id:'reflect', num:'04', label:'Reflect', weight:14,
+      risk:'Evaluation you can\'t run yourself',
+      body:'The review\'s "evaluation hub" assumes an organization can run red-teaming exercises and interpret benchmark results like AgentDojo or HarmBench. That assumes technical staff with the time and training to do so — scarce where three engineers cover the agent, the database, and the network.',
+      riskLine:'Borrowing an existing benchmark as a pre-deployment gate captures most of the value at a fraction of the cost of building your own.',
+      mitigations:['Adopt AgentDojo / HarmBench as a gate','Pre-deployment red-team checklist','Process metrics, not just task success']
+    },
+    {
+      id:'learn', num:'05', label:'Learn', weight:18,
+      risk:'Memory poisoning',
+      body:'An agent that quietly absorbs a false belief through poisoned data and defends it later is dangerous everywhere — but far more dangerous with no monitoring team watching for "sleeper" symptoms, and no incident-response playbook for what to do once it\'s discovered.',
+      riskLine:'This is the stage where the absence of a national CERT or dedicated AI regulatory unit is felt most directly.',
+      mitigations:['Sleeper-symptom monitoring','Incident-response playbook','Differential privacy on memory stores']
+    }
+  ];
+
+  var techniques = [
+    {stage:'act', name:'Least-privilege API scopes', cost:1, desc:'Grant the agent only the specific tool permissions a task needs — never broad, standing access.'},
+    {stage:'act', name:'Human approval gates', cost:1, desc:'Require sign-off before irreversible actions: sending money, deleting records, external messages.'},
+    {stage:'act', name:'Short-lived credentials', cost:2, desc:'Issue tokens that expire quickly, so a compromised session has a short blast radius.'},
+    {stage:'perceive', name:'Content-as-data sandboxing', cost:2, desc:'Parse untrusted input in an isolated context that can\'t be interpreted as instructions.'},
+    {stage:'plan', name:'Constrained planning', cost:3, desc:'Restrict the space of plans an agent can propose to a pre-approved set of safe action sequences.'},
+    {stage:'reflect', name:'Borrowed benchmarks (AgentDojo, HarmBench)', cost:1, desc:'Use an existing open benchmark as a pre-deployment gate instead of building red-teaming in-house.'},
+    {stage:'learn', name:'Incident-response playbook', cost:1, desc:'A written, rehearsed plan for what happens the moment poisoned memory or a sleeper behavior is found.'},
+    {stage:'act', name:'Vendor contract terms', cost:1, desc:'Contractual patch timelines, incident notification, and audit-log access — compensating for capacity you don\'t have in-house.'},
+    {stage:'learn', name:'Differential privacy on memory', cost:3, desc:'Bound how much any single interaction can shift what the agent "remembers" going forward.'},
+    {stage:'reflect', name:'Regional CIRT pooling', cost:2, desc:'Share incident-response capacity across countries or agencies rather than each building its own from scratch.'}
+  ];
+
+  var recommendations = [
+    {title:'Start at the Act stage', body:'Least-privilege API scopes, human approval for irreversible actions, and short-lived credentials — the single highest-leverage investment for limited engineering time.'},
+    {title:'Borrow evaluation rather than building it', body:'Adopt an existing open benchmark (AgentDojo, HarmBench) as a pre-deployment gate instead of standing up your own red-teaming program.'},
+    {title:'Treat the vendor contract as a safety control', body:'Patch timelines, incident notification, and audit-log access matter as much as any technical mitigation when the agent is built and supported abroad.'},
+    {title:'Pool regional capacity', body:'Shared regional incident-response facilities capture more coverage than every country or agency building its own from scratch.'},
+    {title:'Regulate the deployment, not just the model', body:'Focus regulatory leverage on what data an agent may access and what actions need human sign-off — not model-level rules that assume a domestic AI industry.'}
+  ];
+
+  var radarDims = ['Formal regulation','Trained workforce','Incident-response coverage','Public awareness','Compute control'];
+  var radarProfiles = {
+    wellresourced: {label:'Well-resourced setting', color:'safe', values:[78, 82, 85, 70, 88]},
+    constrained: {label:'Resource-constrained setting', color:'danger', values:[28, 34, 22, 40, 20]}
+  };
+
+  // ---------- Pipeline render ----------
+  var pipelineEl = document.getElementById('pipeline');
+  var panelEl = document.getElementById('stagePanel');
+  var activeStage = 'act';
+
+  function renderPipeline(){
+    pipelineEl.innerHTML = '';
+    stages.forEach(function(s){
+      var btn = document.createElement('button');
+      btn.className = 'stage-btn' + (s.id === activeStage ? ' active' : '');
+      btn.setAttribute('data-id', s.id);
+      btn.innerHTML = '<span class="num">'+s.num+'</span><span class="label">'+s.label+'</span><span class="weight"><i style="width:'+s.weight*2.4+'%"></i></span>';
+      btn.addEventListener('click', function(){ activeStage = s.id; renderPipeline(); renderPanel(); });
+      pipelineEl.appendChild(btn);
+    });
+  }
+
+  function renderPanel(){
+    var s = stages.find(function(x){ return x.id === activeStage; });
+    panelEl.innerHTML =
+      '<div class="tag">'+s.risk+'</div>'+
+      '<h3>'+s.label+' stage</h3>'+
+      '<p>'+s.body+'</p>'+
+      '<div class="risk-line">'+s.riskLine+'</div>'+
+      '<div class="mit-heading">mitigations at this stage</div>'+
+      '<div class="mit-chip-row">'+ s.mitigations.map(function(m){ return '<span class="mit-chip">'+m+'</span>'; }).join('') +'</div>';
+  }
+
+  renderPipeline();
+  renderPanel();
+
+  // ---------- Radar chart ----------
+  var radarSvg = document.getElementById('radarSvg');
+  var radarLegend = document.getElementById('radarLegend');
+  var currentView = 'both';
+
+  document.querySelectorAll('.profile-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.profile-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentView = btn.getAttribute('data-profile');
+      drawRadar();
+    });
+  });
+
+  function cssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function polarPoint(cx, cy, r, angle){
+    return [cx + r*Math.cos(angle), cy + r*Math.sin(angle)];
+  }
+
+  function drawRadar(){
+    var cx = 180, cy = 175, maxR = 128;
+    var n = radarDims.length;
+    var svgns = 'http://www.w3.org/2000/svg';
+    radarSvg.innerHTML = '';
+
+    var borderColor = cssVar('--border');
+    var textMuted = cssVar('--text-muted');
+    var textColor = cssVar('--text');
+
+    // grid rings
+    [0.25,0.5,0.75,1].forEach(function(f){
+      var pts = [];
+      for(var i=0;i<n;i++){
+        var angle = -Math.PI/2 + i*(2*Math.PI/n);
+        var p = polarPoint(cx, cy, maxR*f, angle);
+        pts.push(p.join(','));
+      }
+      var poly = document.createElementNS(svgns,'polygon');
+      poly.setAttribute('points', pts.join(' '));
+      poly.setAttribute('fill', 'none');
+      poly.setAttribute('stroke', borderColor);
+      poly.setAttribute('stroke-width', '1');
+      radarSvg.appendChild(poly);
+    });
+
+    // axes + labels
+    for(var i=0;i<n;i++){
+      var angle = -Math.PI/2 + i*(2*Math.PI/n);
+      var p = polarPoint(cx, cy, maxR, angle);
+      var line = document.createElementNS(svgns,'line');
+      line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+      line.setAttribute('x2', p[0]); line.setAttribute('y2', p[1]);
+      line.setAttribute('stroke', borderColor);
+      line.setAttribute('stroke-width', '1');
+      radarSvg.appendChild(line);
+
+      var lp = polarPoint(cx, cy, maxR + 26, angle);
+      var text = document.createElementNS(svgns,'text');
+      text.setAttribute('x', lp[0]); text.setAttribute('y', lp[1]);
+      text.setAttribute('text-anchor', Math.abs(lp[0]-cx) < 4 ? 'middle' : (lp[0] > cx ? 'start' : 'end'));
+      text.setAttribute('dominant-baseline','middle');
+      text.setAttribute('font-size','9.5');
+      text.setAttribute('font-family','IBM Plex Mono, monospace');
+      text.setAttribute('fill', textMuted);
+      var words = radarDims[i].split(' ');
+      if(words.length > 1){
+        text.textContent = '';
+        words.forEach(function(w, wi){
+          var tspan = document.createElementNS(svgns,'tspan');
+          tspan.setAttribute('x', lp[0]);
+          tspan.setAttribute('dy', wi === 0 ? '0' : '11');
+          tspan.textContent = w;
+          text.appendChild(tspan);
+        });
+      } else {
+        text.textContent = radarDims[i];
+      }
+      radarSvg.appendChild(text);
+    }
+
+    function profilePolygon(profileKey){
+      var profile = radarProfiles[profileKey];
+      var pts = [];
+      for(var i=0;i<n;i++){
+        var angle = -Math.PI/2 + i*(2*Math.PI/n);
+        var r = maxR * (profile.values[i]/100);
+        pts.push(polarPoint(cx, cy, r, angle));
+      }
+      var poly = document.createElementNS(svgns,'polygon');
+      poly.setAttribute('points', pts.map(function(p){return p.join(',');}).join(' '));
+      var color = cssVar('--'+profile.color);
+      poly.setAttribute('fill', color);
+      poly.setAttribute('fill-opacity','0.16');
+      poly.setAttribute('stroke', color);
+      poly.setAttribute('stroke-width','2');
+      radarSvg.appendChild(poly);
+      pts.forEach(function(p){
+        var dot = document.createElementNS(svgns,'circle');
+        dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]); dot.setAttribute('r','3');
+        dot.setAttribute('fill', color);
+        radarSvg.appendChild(dot);
+      });
+    }
+
+    var keysToShow = currentView === 'both' ? ['wellresourced','constrained'] : [currentView];
+    keysToShow.forEach(profilePolygon);
+
+    // legend
+    radarLegend.innerHTML = '';
+    keysToShow.forEach(function(key){
+      var profile = radarProfiles[key];
+      radarDims.forEach(function(dim, i){
+        var row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = '<span class="dim">'+dim+' <span class="mono" style="color:var(--'+profile.color+')">●</span></span><span class="val">'+profile.values[i]+'</span>';
+        radarLegend.appendChild(row);
+      });
+    });
+  }
+  drawRadar();
+
+  // ---------- Mitigation library ----------
+  var filterRow = document.getElementById('filterRow');
+  var techGrid = document.getElementById('techGrid');
+  var activeFilter = 'all';
+
+  var filterDefs = [{id:'all', label:'all stages'}].concat(stages.map(function(s){ return {id:s.id, label:s.label.toLowerCase()}; }));
+
+  function renderFilters(){
+    filterRow.innerHTML = '';
+    filterDefs.forEach(function(f){
+      var chip = document.createElement('button');
+      chip.className = 'filter-chip' + (f.id === activeFilter ? ' active' : '');
+      chip.textContent = f.label;
+      chip.addEventListener('click', function(){ activeFilter = f.id; renderFilters(); renderTech(); });
+      filterRow.appendChild(chip);
+    });
+  }
+
+  function renderTech(){
+    techGrid.innerHTML = '';
+    var list = techniques.filter(function(t){ return activeFilter === 'all' || t.stage === activeFilter; });
+    list.forEach(function(t){
+      var stageLabel = stages.find(function(s){ return s.id === t.stage; }).label;
+      var card = document.createElement('div');
+      card.className = 'tech-card';
+      var dots = '';
+      for(var i=1;i<=3;i++){ dots += '<span class="cost-dot'+(i<=t.cost?' on':'')+'"></span>'; }
+      card.innerHTML =
+        '<div class="stage-tag">'+stageLabel+' stage</div>'+
+        '<h4>'+t.name+'</h4>'+
+        '<p>'+t.desc+'</p>'+
+        '<div class="cost">'+dots+'<span>implementation cost</span></div>';
+      techGrid.appendChild(card);
+    });
+  }
+
+  renderFilters();
+  renderTech();
+
+  // ---------- Checklist ----------
+  var checklistEl = document.getElementById('checklist');
+  var progressFill = document.getElementById('progressFill');
+  var progressLabel = document.getElementById('progressLabel');
+  var checkedState = {};
+  try{
+    var storedChecks = localStorage.getItem('cg-checklist');
+    if(storedChecks){ checkedState = JSON.parse(storedChecks); }
+  }catch(e){}
+
+  function saveChecks(){
+    try{ localStorage.setItem('cg-checklist', JSON.stringify(checkedState)); }catch(e){}
+  }
+
+  function updateProgress(){
+    var count = recommendations.filter(function(r,i){ return checkedState[i]; }).length;
+    var pct = Math.round((count/recommendations.length)*100);
+    progressFill.style.width = pct + '%';
+    progressLabel.textContent = count + ' / ' + recommendations.length;
+  }
+
+  function renderChecklist(){
+    checklistEl.innerHTML = '';
+    recommendations.forEach(function(r, i){
+      var item = document.createElement('div');
+      item.className = 'check-item' + (checkedState[i] ? ' done' : '');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!checkedState[i];
+      cb.addEventListener('change', function(){
+        checkedState[i] = cb.checked;
+        item.classList.toggle('done', cb.checked);
+        saveChecks();
+        updateProgress();
+      });
+      var body = document.createElement('div');
+      body.className = 'body';
+      body.innerHTML = '<h4>'+r.title+'</h4><p>'+r.body+'</p>';
+      item.appendChild(cb);
+      item.appendChild(body);
+      checklistEl.appendChild(item);
+    });
+    updateProgress();
+  }
+  renderChecklist();
+
+})();
+</script>
+</body>
+</html>
